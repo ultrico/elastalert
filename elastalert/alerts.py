@@ -97,7 +97,10 @@ class BasicMatchString(object):
 
     def _add_rule_text(self):
         self.text += self.rule['type'].get_match_str(self.match)
-
+    
+    def _add_kibana_links(self):
+        self.text += '<http://kibana-test.securia.local/app/kibana#/doc/70894fc0-3e46-11e8-b4e0-17472b625467/%s/doc?id=%s&_g=()|Event details>' % (self.match["_index"], self.match["_id"])		
+    
     def _add_top_counts(self):
         for key, counts in self.match.items():
             if key.startswith('top_events_'):
@@ -138,18 +141,13 @@ class BasicMatchString(object):
 
     def __str__(self):
         self.text = ''
-        if 'alert_text' not in self.rule:
-            self.text += self.rule['name'] + '\n\n'
 
         self._add_custom_alert_text()
         self._ensure_new_line()
         if self.rule.get('alert_text_type') != 'alert_text_only':
             self._add_rule_text()
             self._ensure_new_line()
-            if self.rule.get('top_count_keys'):
-                self._add_top_counts()
-            if self.rule.get('alert_text_type') != 'exclude_fields':
-                self._add_match_items()
+            self._add_kibana_links()
         return self.text
 
 
